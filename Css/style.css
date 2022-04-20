@@ -12,15 +12,30 @@ body{
   padding-left: 7.188rem;
 }
 
-h4{
-  align-self: center
+label{ 
+  align-self: center;
+  font-size: 1.5rem;
+ 
 }
-
 input{
+  text-align:justify;
+  width: 5.5rem;
+  height: 2.4rem;
+  padding:0.85rem ;
+  border: 1px solid rgb(203, 201, 201) ;
   border-radius: 0.25rem;
-  border: 1px solid rgb(237, 223, 223);
+}
+input::placeholder{ 
+  color: rgb(168, 166, 166);
 }
 
+.inputResult{
+  font-size: 1.5rem;
+  margin-left: 0.75rem;
+  align-self: center;
+  text-decoration: underline;
+  text-decoration-color: grey;
+}
 
 .checkbox{
   width: auto;
