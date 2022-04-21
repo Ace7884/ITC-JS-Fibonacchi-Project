@@ -1,7 +1,19 @@
 // Milestone 1 global variables
-let X = 8;
-let Y = 0;
+let X = 5;
+let Y = 8;
 let display = document.getElementsByTagName("label")[0];
+
+// add to Html Result
+function addToHtmlY(){
+  display = display.innerText += ` ${X} is ${Y}`;
+}
+addToHtmlY();
+
+
+
+
+
+/*milestone 2 work in progress ignore untill posted
 
 // takes X input outputs X's Fibonacci as Y
 function fibonacciCalc(X) {
@@ -10,16 +22,9 @@ function fibonacciCalc(X) {
   return Y;
 }
 
-// add to Html Result
-function addToHtmlY(){
-  fibonacciCalc(X);
-  display = display.innerText += ` ${X} is ${Y}`;
-}
-
-addToHtmlY();
-
 
 // future milestone variables
 let userInput = document.getElementById("userInput");
 let button = document.getElementsByClassName("btn")[0];
 let questionOutput = document.getElementById("inputResult");
+*/
