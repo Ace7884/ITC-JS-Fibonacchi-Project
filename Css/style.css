@@ -1,35 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
-
-*{
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+/* Global variables */
+* {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 
-body{
+body {
   padding-top: 3.125rem;
   padding-left: 7.188rem;
 }
 
-label{ 
+label {
   align-self: center;
   font-size: 1.5rem;
- 
 }
-input{
-  text-align:justify;
+input {
+  text-align: justify;
   width: 5.5rem;
   height: 2.4rem;
-  padding:0.85rem ;
-  border: 1px solid rgb(203, 201, 201) ;
+  padding: 0.85rem;
+  border: 1px solid rgb(203, 201, 201);
   border-radius: 0.25rem;
 }
-input::placeholder{ 
+input::placeholder {
   color: rgb(168, 166, 166);
 }
 
-.inputResult{
+.inputResult {
   font-size: 1.5rem;
   margin-left: 0.75rem;
   align-self: center;
@@ -37,6 +36,6 @@ input::placeholder{
   text-decoration-color: grey;
 }
 
-.checkbox{
+.checkbox {
   width: auto;
 }
