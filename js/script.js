@@ -1,16 +1,20 @@
-// Milestone 1 global variables
+//Milestone 1
+
+//global variables
 let X = 23;
 let Y = 6;
 let display = document.getElementsByTagName("label")[0];
 
-// Appends Y to Html
+//Milestone 1 functions
+//Appends Y to Html
 function addToHtmlY() {
   display = display.innerText += ` ${X} is ${Y}`;
 }
 
+//Milestone 2
 
-//milestone 2
-//starter fibonacci set conditionals
+//Milestone 2 functions
+//Sets Starter fibonacci set conditionals
 function fibonacciStartSet(X) {
   if (X === 0) {
     return (Y = 0);
@@ -20,7 +24,7 @@ function fibonacciStartSet(X) {
   }
 }
 
-// takes X input outputs X's Fibonacci as Y
+//Takes X input outputs X's Fibonacci as Y
 function fibonacciCalc(X) {
   Y = 1;
   let numSum = 0;
@@ -38,10 +42,27 @@ function fibonacciCalc(X) {
   return Y;
 }
 
-fibonacciCalc(X);
-addToHtmlY();
+//Milestone 3 
 
-// future milestone variables
-let userInput = document.getElementById("userInput");
-let button = document.getElementsByClassName("btn")[0];
-let questionOutput = document.getElementById("inputResult");
+//Milestone 3 global variables
+let button1 = document.querySelectorAll("button")[0];
+let questionOutput = document.querySelector('strong');
+
+//Milestone 3 functions
+
+//Register userinput to X and display Y
+function registerInput() {
+  X = document.getElementById("userInput").value;
+  fibonacciCalc(X);
+  displayY(Y);
+}
+
+//Display Fibonacci Number
+function displayY(num){
+  questionOutput.innerText =` ${num}`;
+}
+
+//on button click register Input and calculate Fibonacci
+button1.addEventListener("click", registerInput);
+
+

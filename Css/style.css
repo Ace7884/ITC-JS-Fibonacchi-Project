@@ -28,9 +28,15 @@ input::placeholder {
   color: rgb(168, 166, 166);
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
 .inputResult {
   font-size: 1.5rem;
-  margin-left: 0.75rem;
+  margin-left: 1rem;
   align-self: center;
   text-decoration: underline;
   text-decoration-color: grey;
