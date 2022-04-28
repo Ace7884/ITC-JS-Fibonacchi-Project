@@ -26,7 +26,7 @@ function fibonacciStartSet(X) {
 
 //Takes X input outputs X's Fibonacci as Y
 function fibonacciCalc(X) {
-  Y = 1;
+  Y = 0;
   let numSum = 0;
   let currentNum = 1;
   let secondNum = 1;
@@ -53,16 +53,42 @@ let questionOutput = document.querySelector('strong');
 //Register userinput to X and display Y
 function registerInput() {
   X = document.getElementById("userInput").value;
-  fibonacciCalc(X);
+  //replaced with recursion function 
+  fibonacciCalcRecursion(X)
   displayY(Y);
+  setTimeout(() => {
+    document.getElementsByClassName('inputResult')[0].classList.add('d-none');
+  }, 5000);
+  Y=0;
 }
 
 //Display Fibonacci Number
 function displayY(num){
   questionOutput.innerText =` ${num}`;
+  document.getElementsByClassName('inputResult')[0].classList.remove('d-none');
+  
+  
 }
 
 //on button click register Input and calculate Fibonacci
 button1.addEventListener("click", registerInput);
 
+// document.getElementsByClassName('inputResult')[0].classList.add('d-none');
+
+
+//Milestone 3* recursion version for calc instead
+
+function fibonacciCalcRecursion(X){
+
+  if (X > 0 && X < 3 ) {
+    return (Y = 1);
+  }
+  if (X === 0) {
+    return (Y = 0);
+  }
+    Y = fibonacciCalcRecursion(X-1)+fibonacciCalcRecursion(X-2) ;
+  return Y;
+}
+
+//Milestone 4
 
