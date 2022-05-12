@@ -34,17 +34,26 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-.inputResult {
+.resultSingleNumber {
   font-size: 1.5rem;
   text-decoration: underline;
   text-decoration-color: grey;
 }
 
+.is-invalid {
+  color: #d9534f;
+}
 .checkbox {
   width: auto;
 }
 
-.inputResult,.spinner-border{
+.inputResult,
+.spinner-border {
   margin-left: 1rem;
+}
+
+.is-invalid,
+.inputResult,
+.spinner-border {
   align-self: center;
 }
