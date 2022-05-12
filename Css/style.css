@@ -36,12 +36,15 @@ input::-webkit-inner-spin-button {
 
 .inputResult {
   font-size: 1.5rem;
-  margin-left: 1rem;
-  align-self: center;
   text-decoration: underline;
   text-decoration-color: grey;
 }
 
 .checkbox {
   width: auto;
+}
+
+.inputResult,.spinner-border{
+  margin-left: 1rem;
+  align-self: center;
 }
