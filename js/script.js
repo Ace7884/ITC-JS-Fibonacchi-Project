@@ -5,11 +5,17 @@ let output = "";
 let inputField = document.querySelector("input");
 let button1 = document.querySelectorAll("button")[0];
 let questionOutput = document.querySelector("strong");
+let errorBubble = document.getElementById("errorMessage");
 let loading = true;
 let active = false;
+let errorActivate = true;
 
 //reset input style after error state
 inputField.addEventListener("focus", function () {
+  if (errorActivate) {
+    document.getElementById("errorMessage").classList.add("d-none");
+    errorActivate = false;
+  }
   document
     .querySelector("input")
     .removeAttribute(
@@ -33,13 +39,15 @@ function registerInput() {
 //Function validates if user input more then 50 if it sends error instead of request
 function InputClientValidation(input) {
   if (input > 50 || input == 0 || input === "") {
+    document.getElementById("errorMessage").classList.remove("d-none");
+    errorActivate = true;
     toggleInputError();
   }
   if (input > 50) {
-    throw "Illegal input number cant be larger then 50";
+    throw (errorBubble.innerText = "Can't be larger then 50");
   }
   if (input == 0 || input === "") {
-    throw "Illegal input Please enter number between 1-50";
+    throw (errorBubble.innerText = "Must be between 1-50");
   }
   callServer(input);
 }
@@ -84,7 +92,7 @@ function callServer(num) {
     });
 }
 
-//toggles loader display
+//toggles loading indicator
 function loaderInsert(index) {
   document.getElementsByClassName("inputResult")[0].classList.add("d-none");
   if (loading) {
@@ -97,7 +105,7 @@ function loaderInsert(index) {
     [index].classList.add("d-none");
 }
 
-//Displays Fibonacci Number and timeout after awhile
+//Displays Fibonacci Number and timeouts
 function displayY(num) {
   //if 42 entered change result to error style
   if (isNaN(num)) {
@@ -113,13 +121,14 @@ function displayY(num) {
   //display result
   questionOutput.innerText = `${num}`;
   document.getElementsByClassName("inputResult")[0].classList.remove("d-none");
+  //timeout for result display
   setTimeout(() => {
     document.getElementsByClassName("inputResult")[0].classList.add("d-none");
     questionOutput.removeAttribute("style", "color:var(--invalid-color1)");
     document
       .getElementsByClassName("inputResult")[0]
       .classList.remove("resultSingleNumber");
-  }, 4000);
+  }, 3000);
 }
 
 //reset input style after error
