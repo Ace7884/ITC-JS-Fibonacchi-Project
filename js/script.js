@@ -2,10 +2,22 @@
 
 //global variables
 let output = "";
-let display = document.getElementsByTagName("label")[0];
+let inputField = document.querySelector("input");
 let button1 = document.querySelectorAll("button")[0];
 let questionOutput = document.querySelector("strong");
 let loading = true;
+let active = false;
+
+//reset input style after error state
+inputField.addEventListener("focus", function () {
+  document
+    .querySelector("input")
+    .removeAttribute(
+      "style",
+      "color: var(--invalid-color1); border:2px solid var(--invalid-color1);"
+    );
+  return (active = false);
+});
 
 //on button click register Input and calculate Fibonacci
 button1.addEventListener("click", registerInput);
@@ -20,16 +32,37 @@ function registerInput() {
 
 //Function validates if user input more then 50 if it sends error instead of request
 function InputClientValidation(input) {
+  if (input > 50 || input == 0 || input === "") {
+    toggleInputError();
+  }
   if (input > 50) {
-    return displayY("Illegal input number cant be larger then 50");
+    throw "Illegal input number cant be larger then 50";
   }
   if (input == 0 || input === "") {
-    return displayY("Illegal input Please enter number between 1-50");
+    throw "Illegal input Please enter number between 1-50";
   }
   callServer(input);
 }
 
-//try catch to the server request in case of asking for 42
+//toggles clientside error stylings
+function toggleInputError() {
+  if (!active) {
+    document
+      .querySelector("input")
+      .setAttribute(
+        "style",
+        "color: var(--invalid-color1); border:2px solid var(--invalid-color1);"
+      );
+    return (active = true);
+  }
+  document
+    .querySelector("input")
+    .removeAttribute(
+      "style",
+      "color: var(--invalid-color1); border:2px solid var(--invalid-color1);"
+    );
+  return (active = false);
+}
 
 //Outsources fibonacci calc to local server
 function callServer(num) {
@@ -66,11 +99,9 @@ function loaderInsert(index) {
 
 //Displays Fibonacci Number and timeout after awhile
 function displayY(num) {
+  //if 42 entered change result to error style
   if (isNaN(num)) {
-    //if 42 entered change result to error style
-    document
-      .getElementsByClassName("inputResult")[0]
-      .classList.add("is-invalid");
+    questionOutput.setAttribute("style", "color:var(--invalid-color1)");
   } else {
     document
       .getElementsByClassName("inputResult")[0]
@@ -79,15 +110,24 @@ function displayY(num) {
   //remove loading indicator
   loading = false;
   loaderInsert(0);
+  //display result
   questionOutput.innerText = `${num}`;
   document.getElementsByClassName("inputResult")[0].classList.remove("d-none");
   setTimeout(() => {
     document.getElementsByClassName("inputResult")[0].classList.add("d-none");
-    document
-      .getElementsByClassName("inputResult")[0]
-      .classList.remove("is-invalid");
+    questionOutput.removeAttribute("style", "color:var(--invalid-color1)");
     document
       .getElementsByClassName("inputResult")[0]
       .classList.remove("resultSingleNumber");
-  }, 8000);
+  }, 4000);
 }
+
+//reset input style after error
+inputField.addEventListener("focus", function () {
+  document
+    .querySelector("input")
+    .removeAttribute(
+      "style",
+      "color: var(--invalid-color1); border:2px solid var(--invalid-color1);"
+    );
+});

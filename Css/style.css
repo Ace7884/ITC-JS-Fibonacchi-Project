@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
 /* Global variables */
+:root {
+  --invalid-color1: #d9534f;
+  --invalid-color2: #a94442;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -13,7 +18,6 @@ body {
 }
 
 label {
-  align-self: center;
   font-size: 1.5rem;
 }
 input {
@@ -21,7 +25,7 @@ input {
   width: 5.5rem;
   height: 2.4rem;
   padding: 0.85rem;
-  border: 1px solid rgb(203, 201, 201);
+  border: 1.5px solid rgb(203, 201, 201);
   border-radius: 0.25rem;
 }
 input::placeholder {
@@ -35,14 +39,12 @@ input::-webkit-inner-spin-button {
 }
 
 .resultSingleNumber {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 1000;
   text-decoration: underline;
   text-decoration-color: grey;
 }
 
-.is-invalid {
-  color: #d9534f;
-}
 .checkbox {
   width: auto;
 }
@@ -52,7 +54,6 @@ input::-webkit-inner-spin-button {
   margin-left: 1rem;
 }
 
-.is-invalid,
 .inputResult,
 .spinner-border {
   align-self: center;
