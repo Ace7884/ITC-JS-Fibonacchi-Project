@@ -1,42 +1,31 @@
 //Milestone 5
 
 //global variables
-let output = "";
 let inputField = document.querySelector("input");
 let button1 = document.querySelectorAll("button")[0];
 let questionOutput = document.querySelector("strong");
 let errorBubble = document.getElementById("errorMessage");
+
+//Status variables
 let loading = true;
 let active = false;
 let errorActivate = true;
+let output = "";
+let error = "";
+let responseStatus = "";
 
-//reset input style after error state
-inputField.addEventListener("focus", function () {
-  if (errorActivate) {
-    document.getElementById("errorMessage").classList.add("d-none");
-    errorActivate = false;
-  }
-  document
-    .querySelector("input")
-    .removeAttribute(
-      "style",
-      "color: var(--invalid-color1); border:2px solid var(--invalid-color1);"
-    );
-  return (active = false);
-});
-
-//on button click register Input and calculate Fibonacci
+//Registers Input and sends to Validation
 button1.addEventListener("click", registerInput);
 document.getElementsByClassName("inputResult")[0].classList.add("d-none");
 
-//Revised function to replace previous fibonacci calc and display with local server instead
+//Sends user input to be validated
 function registerInput() {
   let input = document.getElementById("userInput").value;
   //Client side Validation if passes send request if not send error
   InputClientValidation(input);
 }
 
-//Function validates if user input more then 50 if it sends error instead of request
+//ClientSideValidation if passes send to server as request if not display error
 function InputClientValidation(input) {
   if (input > 50 || input == 0 || input === "") {
     document.getElementById("errorMessage").classList.remove("d-none");
@@ -52,7 +41,65 @@ function InputClientValidation(input) {
   callServer(input);
 }
 
-//toggles clientside error stylings
+//Outsources fibonacci calc to local server and display to user
+function callServer(num) {
+  //activate loading indicator
+  loading = true;
+  loaderInsert(0);
+  const url = `http://localhost:5050/fibonacci/${num}`;
+  fetch(url)
+    .then((response) => {
+      //check for server error and process either to json if ok or to a text if not
+      if (response.status === 400) {
+        //store status for further usage and store response text in error variable thrown to catch
+        responseStatus = 400;
+        error = response.text();
+        throw error;
+      }
+      return response.json();
+    })
+    .then((data) => {
+      output = data.result;
+      displayY(output);
+    })
+    //catch error variable and pass over to displaying to resolve promise pending status
+    .catch((errorResponse) => {
+      return error;
+    })
+    //display server error
+    .then((displayError) => {
+      //Last check to block error code to run if no server error detected and update status indicator
+      if (responseStatus === 400) {
+        displayY(displayError);
+        responseStatus = "";
+      }
+      return;
+    });
+}
+
+//Displays Fibonacci Number
+function displayY(num) {
+  //if 42 entered change result to error style
+  if (isNaN(num)) {
+    questionOutput.setAttribute("style", "color:var(--invalid-color1)");
+  } else {
+    document
+      .getElementsByClassName("inputResult")[0]
+      .classList.add("resultSingleNumber");
+  }
+  //remove loading indicator
+  loading = false;
+  loaderInsert(0);
+  //display result
+  questionOutput.innerText = `${num}`;
+  document.getElementsByClassName("inputResult")[0].classList.remove("d-none");
+  //timeout for result
+  timeoutDisplay();
+}
+
+//Auxiliry functions
+
+//Toggles clientside error stylings
 function toggleInputError() {
   if (!active) {
     document
@@ -72,27 +119,18 @@ function toggleInputError() {
   return (active = false);
 }
 
-//Outsources fibonacci calc to local server
-function callServer(num) {
-  //activate loading indicator
-  loading = true;
-  loaderInsert(0);
-  const url = `http://localhost:5050/fibonacci/${num}`;
-  fetch(url)
-    .then((response) => {
-      //if 42 input display error and exit promise
-      if (response.status === 400) {
-        throw displayY("Server Error: 42 is the meaning of life");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      output = data.result;
-      return displayY(output);
-    });
+//Timeout display
+function timeoutDisplay() {
+  setTimeout(() => {
+    document.getElementsByClassName("inputResult")[0].classList.add("d-none");
+    questionOutput.removeAttribute("style", "color:var(--invalid-color1)");
+    document
+      .getElementsByClassName("inputResult")[0]
+      .classList.remove("resultSingleNumber");
+  }, 2000);
 }
 
-//toggles loading indicator
+//Toggle loading indicator
 function loaderInsert(index) {
   document.getElementsByClassName("inputResult")[0].classList.add("d-none");
   if (loading) {
@@ -105,38 +143,17 @@ function loaderInsert(index) {
     [index].classList.add("d-none");
 }
 
-//Displays Fibonacci Number and timeouts
-function displayY(num) {
-  //if 42 entered change result to error style
-  if (isNaN(num)) {
-    questionOutput.setAttribute("style", "color:var(--invalid-color1)");
-  } else {
-    document
-      .getElementsByClassName("inputResult")[0]
-      .classList.add("resultSingleNumber");
-  }
-  //remove loading indicator
-  loading = false;
-  loaderInsert(0);
-  //display result
-  questionOutput.innerText = `${num}`;
-  document.getElementsByClassName("inputResult")[0].classList.remove("d-none");
-  //timeout for result display
-  setTimeout(() => {
-    document.getElementsByClassName("inputResult")[0].classList.add("d-none");
-    questionOutput.removeAttribute("style", "color:var(--invalid-color1)");
-    document
-      .getElementsByClassName("inputResult")[0]
-      .classList.remove("resultSingleNumber");
-  }, 3000);
-}
-
-//reset input style after error
+//Reset input styling after error state
 inputField.addEventListener("focus", function () {
+  if (errorActivate) {
+    document.getElementById("errorMessage").classList.add("d-none");
+    errorActivate = false;
+  }
   document
     .querySelector("input")
     .removeAttribute(
       "style",
       "color: var(--invalid-color1); border:2px solid var(--invalid-color1);"
     );
+  return (active = false);
 });

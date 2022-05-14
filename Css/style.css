@@ -37,7 +37,7 @@ input::-webkit-inner-spin-button {
   appearance: none;
   margin: 0;
 }
-
+/*Custom styling to fit design */
 .resultSingleNumber {
   font-size: 1.4rem;
   font-weight: 1000;
@@ -57,4 +57,12 @@ input::-webkit-inner-spin-button {
 .inputResult,
 .spinner-border {
   align-self: center;
+}
+
+#errorMessage {
+  width: fit-content;
+  color: var(--invalid-color2);
+  background-color: #f2dede;
+  border: 1px dotted #ebcccc;
+  margin-left: 113px;
 }
