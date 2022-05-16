@@ -1,13 +1,15 @@
-//Milestone 5
+//Milestone 6
 
 //global variables
 let inputField = document.querySelector("input");
 let button1 = document.querySelectorAll("button")[0];
 let questionOutput = document.querySelector("strong");
 let errorBubble = document.getElementById("errorMessage");
+let searchLog = [];
 
 //Status variables
-let loading = true;
+let loadingUser = true;
+let loadingResults = true;
 let active = false;
 let errorActivate = true;
 let output = "";
@@ -27,7 +29,11 @@ function registerInput() {
 
 //ClientSideValidation if passes send to server as request if not display error
 function InputClientValidation(input) {
+  //reset output and results fields
+  document.getElementById("resultsLog").innerHTML = "";
+  document.getElementsByClassName("inputResult")[0].classList.add("d-none");
   if (input > 50 || input == 0 || input === "") {
+    
     document.getElementById("errorMessage").classList.remove("d-none");
     errorActivate = true;
     toggleInputError();
@@ -44,7 +50,7 @@ function InputClientValidation(input) {
 //Outsources fibonacci calc to local server and display to user
 function callServer(num) {
   //activate loading indicator
-  loading = true;
+  document.getElementsByClassName("inputResult")[0].classList.add("d-none");
   loaderInsert(0);
   const url = `http://localhost:5050/fibonacci/${num}`;
   fetch(url)
@@ -64,7 +70,7 @@ function callServer(num) {
     })
     //catch error variable and pass over to displaying to resolve promise pending status
     .catch((errorResponse) => {
-      return error;
+      return errorResponse;
     })
     //display server error
     .then((displayError) => {
@@ -77,23 +83,53 @@ function callServer(num) {
     });
 }
 
+//log submission request and result to the server
+function resultHistory() {
+  document.getElementById("resultsLog").innerHTML = "";
+  loaderInsert(1);
+  const resUrl = "http://localhost:5050/getFibonacciResults";
+  fetch(resUrl)
+    .then((response) => response.json())
+    .then((data) => displayResultsLog(data));
+}
+
+//Displays search result
+function displayResultsLog(data) {
+  loaderInsert(1);
+  //reset list
+  document.getElementById("resultsLog").innerHTML = "";
+  //iterate throught the the array and present as list
+  for (objIndex in data.results) {
+    let objArray = data.results;
+    //convert timestamp to proper date format
+    let formatedDate = new Date(objArray[objIndex].createdDate);
+    let listItem = document.createElement("li");
+    listItem.innerText += `The Fibonnaci Of ${objArray[objIndex].number} is ${objArray[objIndex].result}. Calculated at: ${formatedDate}`;
+    document.getElementById("resultsLog").appendChild(listItem);
+  }
+}
+
 //Displays Fibonacci Number
 function displayY(num) {
   //if 42 entered change result to error style
   if (isNaN(num)) {
+    document
+      .getElementsByClassName("inputResult")[0]
+      .classList.remove("resultSingleNumber");
     questionOutput.setAttribute("style", "color:var(--invalid-color1)");
   } else {
     document
       .getElementsByClassName("inputResult")[0]
       .classList.add("resultSingleNumber");
+    questionOutput.setAttribute("style", "color:black");
   }
-  //remove loading indicator
-  loading = false;
+  //disactivate loading indicator
   loaderInsert(0);
   //display result
   questionOutput.innerText = `${num}`;
   document.getElementsByClassName("inputResult")[0].classList.remove("d-none");
-  //timeout for result
+  resultHistory();
+  //timeout for results
   timeoutDisplay();
 }
 
@@ -127,20 +163,21 @@ function timeoutDisplay() {
     document
       .getElementsByClassName("inputResult")[0]
       .classList.remove("resultSingleNumber");
-  }, 2000);
+  }, 5000);
 }
 
 //Toggle loading indicator
 function loaderInsert(index) {
-  document.getElementsByClassName("inputResult")[0].classList.add("d-none");
-  if (loading) {
-    return document
+  if (loadingUser && loadingResults) {
+    document
       .getElementsByClassName("spinner-border")
       [index].classList.remove("d-none");
+    return loadingUser, (loadingResults = false);
   }
   document
     .getElementsByClassName("spinner-border")
     [index].classList.add("d-none");
+  return loadingUser, (loadingResults = true);
 }
 
 //Reset input styling after error state
