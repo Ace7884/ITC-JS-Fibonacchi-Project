@@ -46,15 +46,8 @@ input::-webkit-inner-spin-button {
 /*Custom styling to fit design */
 .resultSingleNumber {
   font-size: 1.4rem;
-}
-
-.resultSingleNumber {
   text-decoration: underline;
   text-decoration-color: grey;
-}
-
-.checkbox {
-  width: auto;
 }
 
 .inputResult,
@@ -74,6 +67,16 @@ input::-webkit-inner-spin-button {
   margin-left: 116px;
   margin-top: -40px;
   position: absolute;
+}
+
+.form-check {
+  position: absolute;
+  margin-top: -46px;
+}
+.custom-control-input {
+  margin-top: 1px;
+  height: 14px;
+  width: 14px;
 }
 
 li,

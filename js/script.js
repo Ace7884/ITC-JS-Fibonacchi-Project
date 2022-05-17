@@ -1,4 +1,4 @@
-//Milestone 6.1*
+//Milestone 7
 
 //global variables
 let inputField = document.querySelector("input");
@@ -6,6 +6,7 @@ let button1 = document.querySelectorAll("button")[0];
 let questionOutput = document.querySelector("strong");
 let errorBubble = document.getElementById("errorMessage");
 let searchLog = [];
+let saveToggle = document.getElementById("saveCalcToggle");
 
 //Status variables
 let loadingUser = true;
@@ -15,10 +16,35 @@ let errorActivate = true;
 let output = "";
 let error = "";
 let responseStatus = "";
+let saveCalc=false;
 
 //Registers Input and sends to Validation
 button1.addEventListener("click", registerInput);
 document.getElementsByClassName("inputResult")[0].classList.add("d-none");
+saveToggle.addEventListener("click" ,registerSaveToggle)
+
+//Local Fibonacci Calculator from milestone 3 revised
+//to be used in case save button unchecked
+
+//Calculates Fibonacci locally
+function fibonacciCalcLocal(input) {
+  let result =0;
+  let numSum = 0;
+  let currentNum = 1;
+  let secondNum = 1;
+
+  if(input>0 && input<3 || input == 42){
+    return fibonacciStartSet(input);
+  }
+ 
+  for (let i = 2; i<input; i++) {
+    numSum = currentNum + secondNum;
+    result = numSum;
+    secondNum = currentNum;
+    currentNum = numSum;
+  }
+  displayY(result);
+}
 
 //Sends user input to be validated
 function registerInput() {
@@ -43,14 +69,18 @@ function InputClientValidation(input) {
   if (input == 0 || input === "") {
     throw (errorBubble.innerText = "Must be between 1-50");
   }
+  //check if user checked to send calculation to server
+  if(saveCalc===false){
+    return fibonacciCalcLocal(input);
+  }
   callServer(input);
 }
 
 //switched to Async Await syntex
 //Outsources fibonacci calc to local server and display to user
 async function callServer(num) {
-  //activate loading indicator
   document.getElementsByClassName("inputResult")[0].classList.add("d-none");
+  //Activate loader
   loaderInsert(0);
   const url = `http://localhost:5050/fibonacci/${num}`;
   try {
@@ -60,10 +90,8 @@ async function callServer(num) {
     }
     response = await response.json();
     let data = response;
-    console.log(data.result);
     displayY(data.result);
   } catch (error) {
-    console.log(response);
     displayY(response);
   }
 }
@@ -72,6 +100,7 @@ async function callServer(num) {
 //log submission request and result to the server
 async function resultHistory() {
   document.getElementById("resultsLog").innerHTML = "";
+  //activate loading state
   loaderInsert(1);
   const resUrl = "http://localhost:5050/getFibonacciResults";
   let response = await fetch(resUrl);
@@ -81,6 +110,7 @@ async function resultHistory() {
 
 //Displays search result
 function displayResultsLog(data) {
+  //disactivate loading state
   loaderInsert(1);
   //reset list
   document.getElementById("resultsLog").innerHTML = "";
@@ -111,12 +141,18 @@ function displayY(num) {
       .classList.add("resultSingleNumber");
     questionOutput.setAttribute("style", "color:black");
   }
-  //disactivate loading indicator
-  loaderInsert(0);
+  //activate loading indicator
+  if(saveCalc===false){
+    loaderInsert(0);
+  }
   //display result
   questionOutput.innerText = `${num}`;
+  //disactivate loading indicator
+  loaderInsert(0);
   document.getElementsByClassName("inputResult")[0].classList.remove("d-none");
-  resultHistory();
+  if(saveCalc){
+    resultHistory();
+  }
 }
 
 //Auxiliry functions
@@ -158,12 +194,12 @@ function loaderInsert(index) {
     document
       .getElementsByClassName("spinner-border")
       [index].classList.remove("d-none");
-    return loadingUser, (loadingResults = false);
+    return loadingUser, loadingResults = false;
   }
   document
     .getElementsByClassName("spinner-border")
     [index].classList.add("d-none");
-  return loadingUser, (loadingResults = true);
+  return loadingUser, loadingResults = true;
 }
 
 //Reset input styling after error state
@@ -180,3 +216,21 @@ inputField.addEventListener("focus", function () {
     );
   return (active = false);
 });
+
+//Registers whether saveToggle been clicked
+function registerSaveToggle(){
+  if(saveCalc){
+    return saveCalc=false;
+  }
+  return saveCalc=true;  
+}
+
+//Sets Starter fibonacci set conditionals
+function fibonacciStartSet(input) {
+  if (input > 0 && input < 3) {
+  return displayY(1);
+  }
+  if(input == 42){
+   return displayY("42 is the meaning of life");
+  }
+}
