@@ -1,4 +1,4 @@
-//Milestone 6
+//Milestone 6.1*
 
 //global variables
 let inputField = document.querySelector("input");
@@ -33,7 +33,6 @@ function InputClientValidation(input) {
   document.getElementById("resultsLog").innerHTML = "";
   document.getElementsByClassName("inputResult")[0].classList.add("d-none");
   if (input > 50 || input == 0 || input === "") {
-    
     document.getElementById("errorMessage").classList.remove("d-none");
     errorActivate = true;
     toggleInputError();
@@ -47,50 +46,37 @@ function InputClientValidation(input) {
   callServer(input);
 }
 
+//switched to Async Await syntex
 //Outsources fibonacci calc to local server and display to user
-function callServer(num) {
+async function callServer(num) {
   //activate loading indicator
   document.getElementsByClassName("inputResult")[0].classList.add("d-none");
   loaderInsert(0);
   const url = `http://localhost:5050/fibonacci/${num}`;
-  fetch(url)
-    .then((response) => {
-      //check for server error and process either to json if ok or to a text if not
-      if (response.status === 400) {
-        //store status for further usage and store response text in error variable thrown to catch
-        responseStatus = 400;
-        error = response.text();
-        throw error;
-      }
-      return response.json();
-    })
-    .then((data) => {
-      output = data.result;
-      displayY(output);
-    })
-    //catch error variable and pass over to displaying to resolve promise pending status
-    .catch((errorResponse) => {
-      return errorResponse;
-    })
-    //display server error
-    .then((displayError) => {
-      //Last check to block error code to run if no server error detected and update status indicator
-      if (responseStatus === 400) {
-        displayY(displayError);
-        responseStatus = "";
-      }
-      return;
-    });
+  try {
+    let = response = await fetch(url);
+    if (response.status === 400) {
+      response = await response.text();
+    }
+    response = await response.json();
+    let data = response;
+    console.log(data.result);
+    displayY(data.result);
+  } catch (error) {
+    console.log(response);
+    displayY(response);
+  }
 }
 
+//switched to Async Await syntex
 //log submission request and result to the server
-function resultHistory() {
+async function resultHistory() {
   document.getElementById("resultsLog").innerHTML = "";
   loaderInsert(1);
   const resUrl = "http://localhost:5050/getFibonacciResults";
-  fetch(resUrl)
-    .then((response) => response.json())
-    .then((data) => displayResultsLog(data));
+  let response = await fetch(resUrl);
+  response = await response.json();
+  displayResultsLog(response);
 }
 
 //Displays search result
@@ -107,6 +93,8 @@ function displayResultsLog(data) {
     listItem.innerText += `The Fibonnaci Of ${objArray[objIndex].number} is ${objArray[objIndex].result}. Calculated at: ${formatedDate}`;
     document.getElementById("resultsLog").appendChild(listItem);
   }
+  //timeout for results
+  timeoutDisplay();
 }
 
 //Displays Fibonacci Number
@@ -129,8 +117,6 @@ function displayY(num) {
   questionOutput.innerText = `${num}`;
   document.getElementsByClassName("inputResult")[0].classList.remove("d-none");
   resultHistory();
-  //timeout for results
-  timeoutDisplay();
 }
 
 //Auxiliry functions
