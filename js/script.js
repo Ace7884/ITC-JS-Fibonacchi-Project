@@ -118,7 +118,7 @@ async function callServer(num) {
   loaderInsert(0);
   const url = `http://localhost:5050/fibonacci/${num}`;
   try {
-    let = response = await fetch(url);
+    let response = await fetch(url);
     if (response.status === 400) {
       response = await response.text();
     }
