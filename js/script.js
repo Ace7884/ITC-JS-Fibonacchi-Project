@@ -1,4 +1,4 @@
-//Milestone 7
+//Milestone 7.1
 
 //global variables
 let inputField = document.querySelector("input");
@@ -7,8 +7,11 @@ let questionOutput = document.querySelector("strong");
 let errorBubble = document.getElementById("errorMessage");
 let searchLog = [];
 let saveToggle = document.getElementById("saveCalcToggle");
+let dropDownButton = document.getElementsByClassName("btn-secondary")[0];
+let sortOption = "";
+let savedResults = [];
 
-//Status variables
+//Status variablesfi
 let loadingUser = true;
 let loadingResults = true;
 let active = false;
@@ -16,34 +19,63 @@ let errorActivate = true;
 let output = "";
 let error = "";
 let responseStatus = "";
-let saveCalc=false;
+let saveCalc = false;
 
 //Registers Input and sends to Validation
 button1.addEventListener("click", registerInput);
 document.getElementsByClassName("inputResult")[0].classList.add("d-none");
-saveToggle.addEventListener("click" ,registerSaveToggle)
+//Toggles whether to send user input to server or calculate locally
+saveToggle.addEventListener("click", registerSaveToggle);
+//Check if dropdown menu activated
+dropDownButton.addEventListener("click", ifDropDown);
+
+//If dropdown active,perform sort functions given user choice if not disable menu options
+function enableSort() {
+  if (document.getElementById("resultsLog").innerText === "") {
+    document
+      .getElementById("numberAsc")
+      .removeEventListener("click", numberSortAsc);
+    document
+      .getElementById("numberDesc")
+      .removeEventListener("click", numberSortDesc);
+    document
+      .getElementById("dateAsc")
+      .removeEventListener("click", dateSortAsc);
+    document
+      .getElementById("dateDesc")
+      .removeEventListener("click", dateSortDesc);
+  }
+  document.getElementById("numberAsc").addEventListener("click", numberSortAsc);
+  document
+    .getElementById("numberDesc")
+    .addEventListener("click", numberSortDesc);
+  document.getElementById("dateAsc").addEventListener("click", dateSortAsc);
+  document.getElementById("dateDesc").addEventListener("click", dateSortDesc);
+}
 
 //Local Fibonacci Calculator from milestone 3 revised
 //to be used in case save button unchecked
 
 //Calculates Fibonacci locally
 function fibonacciCalcLocal(input) {
-  let result =0;
+  let result = 0;
   let numSum = 0;
   let currentNum = 1;
   let secondNum = 1;
 
-  if(input>0 && input<3 || input == 42){
+  if ((input > 0 && input < 3) || input == 42) {
     return fibonacciStartSet(input);
   }
- 
-  for (let i = 2; i<input; i++) {
+
+  for (let i = 2; i < input; i++) {
     numSum = currentNum + secondNum;
     result = numSum;
     secondNum = currentNum;
     currentNum = numSum;
   }
   displayY(result);
+  //timeout for single result
+  timeoutDisplay();
 }
 
 //Sends user input to be validated
@@ -56,8 +88,10 @@ function registerInput() {
 //ClientSideValidation if passes send to server as request if not display error
 function InputClientValidation(input) {
   //reset output and results fields
-  document.getElementById("resultsLog").innerHTML = "";
   document.getElementsByClassName("inputResult")[0].classList.add("d-none");
+  document.getElementById("resultsLog").innerHTML = "";
+  savedResults = [];
+
   if (input > 50 || input == 0 || input === "") {
     document.getElementById("errorMessage").classList.remove("d-none");
     errorActivate = true;
@@ -70,14 +104,14 @@ function InputClientValidation(input) {
     throw (errorBubble.innerText = "Must be between 1-50");
   }
   //check if user checked to send calculation to server
-  if(saveCalc===false){
+  if (saveCalc === false) {
     return fibonacciCalcLocal(input);
   }
   callServer(input);
 }
 
 //switched to Async Await syntex
-//Outsources fibonacci calc to local server and display to user
+//Outsources fibonacci calc to local server to display to user
 async function callServer(num) {
   document.getElementsByClassName("inputResult")[0].classList.add("d-none");
   //Activate loader
@@ -99,60 +133,62 @@ async function callServer(num) {
 //switched to Async Await syntex
 //log submission request and result to the server
 async function resultHistory() {
-  document.getElementById("resultsLog").innerHTML = "";
   //activate loading state
   loaderInsert(1);
   const resUrl = "http://localhost:5050/getFibonacciResults";
   let response = await fetch(resUrl);
   response = await response.json();
-  displayResultsLog(response);
+  //deactivate loading state
+  loaderInsert(1);
+  //send to be logged
+  displayResultsLog(response.results);
 }
 
 //Displays search result
 function displayResultsLog(data) {
-  //disactivate loading state
-  loaderInsert(1);
+  //store results for later use in sorting
+  if (savedResults.length == 0) {
+    for (objIndex in data) {
+      savedResults.push(data[objIndex]);
+    }
+  }
+
   //reset list
   document.getElementById("resultsLog").innerHTML = "";
+
   //iterate throught the the array and present as list
-  for (objIndex in data.results) {
-    let objArray = data.results;
+  for (objIndex in data) {
+    let objArray = data;
     //convert timestamp to proper date format
-    let formatedDate = new Date(objArray[objIndex].createdDate);
+    let formatedDate = convertTimeStamp(objArray[objIndex].createdDate);
+    //create list
     let listItem = document.createElement("li");
     listItem.innerText += `The Fibonnaci Of ${objArray[objIndex].number} is ${objArray[objIndex].result}. Calculated at: ${formatedDate}`;
     document.getElementById("resultsLog").appendChild(listItem);
   }
-  //timeout for results
-  timeoutDisplay();
 }
 
 //Displays Fibonacci Number
 function displayY(num) {
   //if 42 entered change result to error style
-  if (isNaN(num)) {
-    document
-      .getElementsByClassName("inputResult")[0]
-      .classList.remove("resultSingleNumber");
-    questionOutput.setAttribute("style", "color:var(--invalid-color1)");
-  } else {
-    document
-      .getElementsByClassName("inputResult")[0]
-      .classList.add("resultSingleNumber");
-    questionOutput.setAttribute("style", "color:black");
-  }
+  serverStyle(num);
   //activate loading indicator
-  if(saveCalc===false){
+  if (saveCalc === false) {
     loaderInsert(0);
   }
   //display result
   questionOutput.innerText = `${num}`;
-  //disactivate loading indicator
+  //deactivate loading indicator
   loaderInsert(0);
   document.getElementsByClassName("inputResult")[0].classList.remove("d-none");
-  if(saveCalc){
+
+  //if user chose to save calc display request history
+  if (saveCalc && typeof num == "number") {
     resultHistory();
+    timeoutDisplay();
   }
+  //timeout result
+  timeoutDisplay();
 }
 
 //Auxiliry functions
@@ -177,6 +213,21 @@ function toggleInputError() {
   return (active = false);
 }
 
+//set serverside response styling
+function serverStyle(num) {
+  if (isNaN(num)) {
+    document
+      .getElementsByClassName("inputResult")[0]
+      .classList.remove("resultSingleNumber");
+    questionOutput.setAttribute("style", "color:var(--invalid-color1)");
+  }
+  if (typeof num == "number") {
+    document
+      .getElementsByClassName("inputResult")[0]
+      .classList.add("resultSingleNumber");
+    questionOutput.setAttribute("style", "color:black");
+  }
+}
 //Timeout display
 function timeoutDisplay() {
   setTimeout(() => {
@@ -185,7 +236,7 @@ function timeoutDisplay() {
     document
       .getElementsByClassName("inputResult")[0]
       .classList.remove("resultSingleNumber");
-  }, 5000);
+  }, 3000);
 }
 
 //Toggle loading indicator
@@ -194,12 +245,12 @@ function loaderInsert(index) {
     document
       .getElementsByClassName("spinner-border")
       [index].classList.remove("d-none");
-    return loadingUser, loadingResults = false;
+    return loadingUser, (loadingResults = false);
   }
   document
     .getElementsByClassName("spinner-border")
     [index].classList.add("d-none");
-  return loadingUser, loadingResults = true;
+  return loadingUser, (loadingResults = true);
 }
 
 //Reset input styling after error state
@@ -218,19 +269,75 @@ inputField.addEventListener("focus", function () {
 });
 
 //Registers whether saveToggle been clicked
-function registerSaveToggle(){
-  if(saveCalc){
-    return saveCalc=false;
+function registerSaveToggle() {
+  if (saveCalc) {
+    return (saveCalc = false);
   }
-  return saveCalc=true;  
+  return (saveCalc = true);
 }
 
 //Sets Starter fibonacci set conditionals
 function fibonacciStartSet(input) {
   if (input > 0 && input < 3) {
-  return displayY(1);
+    return displayY(1);
   }
-  if(input == 42){
-   return displayY("42 is the meaning of life");
+  if (input == 42) {
+    return displayY("42 is the meaning of life");
   }
+}
+
+//If dropdown activated and results presented enable menu options
+function ifDropDown() {
+  enableSort();
+}
+
+//sortFunctions
+
+function numberSortAsc() {
+  //sort results
+  savedResults.sort((a, b) => {
+    return b.number - a.number;
+  });
+
+  displayResultsLog(savedResults);
+}
+
+function numberSortDesc() {
+  //sort results
+  savedResults.sort((a, b) => {
+    return a.number - b.number;
+  });
+
+  displayResultsLog(savedResults);
+}
+function dateSortAsc() {
+  //sort results
+  savedResults.sort((a, b) => {
+    return b.createdDate - a.createdDate;
+  });
+  //convert timestamps to date format
+  savedResults.forEach((element) => {
+    element.createdDate = convertTimeStamp(element.createdDate);
+  });
+
+  displayResultsLog(savedResults);
+}
+function dateSortDesc() {
+  //sort results
+  savedResults.sort((a, b) => {
+    return a.createdDate - b.createdDate;
+  });
+  //convert timestamps to date format
+  savedResults.forEach((element) => {
+    element.createdDate = convertTimeStamp(element.createdDate);
+  });
+
+  displayResultsLog(savedResults);
+}
+
+//convert timestamps to date format
+function convertTimeStamp(timestamp) {
+  timestamp = new Date(timestamp);
+
+  return timestamp;
 }

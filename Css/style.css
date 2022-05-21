@@ -79,11 +79,88 @@ input::-webkit-inner-spin-button {
   width: 14px;
 }
 
-li,
 #errorMessage {
   width: fit-content;
 }
 
-li {
-  border-bottom: 1px solid black;
+/*Costumize Bootstrap classes */
+
+.btn-secondary {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 0px;
+  color: black;
+  border: solid 1.5px #cccccc;
+  background-color: #e6e6e6;
+  width: 128px;
+  height: 40px;
+}
+
+.btn-secondary,
+.dropdown-item {
+  height: 40px;
+}
+
+.btn:focus {
+  box-shadow: none;
+}
+
+.dropdown {
+  width: 100px;
+  margin-top: -38px;
+  position: absolute;
+}
+
+.dropdown-menu {
+  padding: 2px 0px;
+  border: none;
+}
+
+.dropdown-item {
+  font-size: 1rem;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+}
+
+/*responsive design queries */
+
+@media (max-width: 702px) {
+  body {
+    padding-left: 70px;
+  }
+}
+
+@media (max-width: 684px) {
+  body {
+    padding-left: 30px;
+  }
+}
+
+@media (max-width: 583px) {
+  body {
+    padding-left: 10px;
+  }
+}
+
+@media (max-width: 537px) {
+  body {
+    padding: 50px 0px;
+  }
+}
+@media (max-width: 521px) {
+  .p-5 {
+    padding: 50px 10px !important;
+  }
+  h2,
+  .btn-primary {
+    align-self: center;
+  }
+  .btn-primary {
+    margin-top: 10px;
+    width: 40px;
+  }
+  .d-inline-flex {
+    flex-direction: column;
+  }
 }
