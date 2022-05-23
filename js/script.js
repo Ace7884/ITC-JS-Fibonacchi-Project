@@ -5,10 +5,8 @@ let inputField = document.querySelector("input");
 let button1 = document.querySelectorAll("button")[0];
 let questionOutput = document.querySelector("strong");
 let errorBubble = document.getElementById("errorMessage");
-let searchLog = [];
 let saveToggle = document.getElementById("saveCalcToggle");
 let dropDownButton = document.getElementsByClassName("btn-secondary")[0];
-let sortOption = "";
 let savedResults = [];
 
 //Status variablesfi
@@ -16,9 +14,7 @@ let loadingUser = true;
 let loadingResults = true;
 let active = false;
 let errorActivate = true;
-let output = "";
 let error = "";
-let responseStatus = "";
 let saveCalc = false;
 
 //Registers Input and sends to Validation
@@ -119,14 +115,16 @@ async function callServer(num) {
   const url = `http://localhost:5050/fibonacci/${num}`;
   try {
     let response = await fetch(url);
-    if (response.status === 400) {
+    if (response.status !== 400) {
+      response = await response.json();
+      let data = response;
+      displayY(data.result);
+    }else{
       response = await response.text();
+      displayY(response);
     }
-    response = await response.json();
-    let data = response;
-    displayY(data.result);
   } catch (error) {
-    displayY(response);
+    displayY(error);
   }
 }
 
@@ -136,12 +134,17 @@ async function resultHistory() {
   //activate loading state
   loaderInsert(1);
   const resUrl = "http://localhost:5050/getFibonacciResults";
+  try {
   let response = await fetch(resUrl);
   response = await response.json();
   //deactivate loading state
   loaderInsert(1);
   //send to be logged
   displayResultsLog(response.results);
+  }
+  catch(error){
+    displayResultsLog(error);
+  }
 }
 
 //Displays search result
@@ -292,7 +295,6 @@ function ifDropDown() {
 }
 
 //sortFunctions
-
 function numberSortAsc() {
   //sort results
   savedResults.sort((a, b) => {
